@@ -1,7 +1,11 @@
 import java.awt.Color; // the color type used in StdDraw
+import java.awt.event.KeyEvent;
 
 // A class used for modelling the game grid
 public class GameGrid {
+   // Add a new data field to the GameGrid class to store the score
+   public static int score = 0;
+
    // data fields
    private int gridHeight, gridWidth; // the size of the game grid
    private Tile[][] tileMatrix; // to store the tiles locked on the game grid
@@ -37,6 +41,10 @@ public class GameGrid {
       this.currentTetromino = currentTetromino;
    }
 
+   // Add a new method to the GameGrid class to get the current score
+   public int getScore() {
+      return score;
+   }
    // A method used for displaying the game grid
    public void display() {
       // clear the background to emptyCellColor
@@ -87,6 +95,118 @@ public class GameGrid {
       StdDraw.rectangle(centerX, centerY, gridWidth / 2, gridHeight / 2);
       StdDraw.setPenRadius(); // reset the pen radius to its default value
    }
+   public void combineTiles() {
+      // Iterate through each row of the grid from top to bottom
+      for (int row = 0; row < gridHeight; row++) {
+         // Iterate through each column of the grid
+         for (int col = 0; col < gridWidth; col++) {
+            // Check if the current cell is occupied by a tile
+            if (tileMatrix[row][col] != null) {
+               // Get the number on the current tile
+               int currentNumber = tileMatrix[row][col].getNumber();
+               // Check if the cell below the current cell is occupied by a tile with the same number
+               if (row < gridHeight - 1 && tileMatrix[row+1][col] != null && tileMatrix[row+1][col].getNumber() == currentNumber) {
+                  // Double the score of the top tile
+                  tileMatrix[row][col].setNumber(currentNumber * 2);
+                  // Delete the bottom tile
+                  tileMatrix[row+1][col] = null;
+                  // Increase the score by the new number on the top tile
+                  score += currentNumber * 2;
+               }
+            }
+         }
+      }
+   }
+
+   public void eraseAloneTiles() {
+      // Iterate through each row of the grid
+      for (int row = 0; row < gridHeight; row++) {
+         // Iterate through each column of the grid
+         for (int col = 0; col < gridWidth; col++) {
+            // Check if the current cell is occupied by a tile
+            if (tileMatrix[row][col] != null) {
+               // Check if the tile is alone (not adjacent to any other tiles)
+               boolean isAlone = true;
+               if (row > 0 && tileMatrix[row-1][col] != null) {
+                  isAlone = false;
+               }
+               if (row < gridHeight - 1 && tileMatrix[row+1][col] != null) {
+                  isAlone = false;
+               }
+               if (col > 0 && tileMatrix[row][col-1] != null) {
+                  isAlone = false;
+               }
+               if (col < gridWidth - 1 && tileMatrix[row][col+1] != null) {
+                  isAlone = false;
+               }
+               // If the tile is alone, erase it and increase the score by its number
+               if (isAlone) {
+                  score += tileMatrix[row][col].getNumber();
+                  tileMatrix[row][col] = null;
+               }
+            }
+         }
+      }
+   }
+
+   public void fillBlanksDown() {
+      // Iterate through each column of the grid
+      for (int col = 0; col < gridWidth; col++) {
+         // Find the first empty cell from bottom to top
+         int emptyRow = gridHeight - 1;
+         while (emptyRow >= 0 && tileMatrix[emptyRow][col] != null) {
+            emptyRow--;
+         }
+         // If an empty cell is found
+         if (emptyRow >= 0) {
+            // Find the first non-empty cell above the empty cell
+            int nonEmptyRow = emptyRow - 1;
+            while (nonEmptyRow >= 0 && tileMatrix[nonEmptyRow][col] == null) {
+               nonEmptyRow--;
+            }
+
+            // While a non-empty cell is found
+            while (nonEmptyRow >= 0) {
+               // Move its tile to the empty cell
+               tileMatrix[emptyRow][col] = tileMatrix[nonEmptyRow][col];
+               tileMatrix[nonEmptyRow][col] = null;
+               // Update the empty and non-empty rows
+               emptyRow--;
+               nonEmptyRow--;
+               while (nonEmptyRow >= 0 && tileMatrix[nonEmptyRow][col] == null) {
+                  nonEmptyRow--;
+               }
+            }
+         }
+      }
+   }
+   public void eraseFullColumns() {
+      // Iterate through each column of the grid
+      for (int col = 0; col < gridWidth; col++) {
+         // Check if the column is full
+         boolean isFull = true;
+         for (int row = 0; row < gridHeight; row++) {
+            if (tileMatrix[row][col] == null) {
+               isFull = false;
+               break;
+            }
+         }
+         // If the column is full
+         if (isFull) {
+            // Erase the column
+            for (int row = 0; row < gridHeight; row++) {
+               tileMatrix[row][col] = null;
+            }
+            // Drop every square above the erased column by one
+            for (int row = 0; row < gridHeight; row++) {
+               for (int aboveCol = col + 1; aboveCol < gridWidth; aboveCol++) {
+                  tileMatrix[row][aboveCol-1] = tileMatrix[row][aboveCol];
+                  tileMatrix[row][aboveCol] = null;
+               }
+            }
+         }
+      }
+   }
 
    // A method for checking whether the grid cell with given row and column
    // indexes is occupied by a tile or empty
@@ -108,6 +228,7 @@ public class GameGrid {
          return false;
       return true;
    }
+
 
    // A method that locks the tiles of the landed tetromino on the game grid while
    // checking if the game is over due to having tiles above the topmost grid row.
@@ -133,7 +254,6 @@ public class GameGrid {
             }
          }
       }
-      // return the value of the gameOver flag
       return gameOver;
    }
 }

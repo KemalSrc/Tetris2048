@@ -49,5 +49,17 @@ public class Tile {
       StdDraw.setPenColor(foregroundColor);
       StdDraw.setFont(font);
       StdDraw.text(position.getX(), position.getY(), "" + number);
+      StdDraw.setPenColor(StdDraw.WHITE);
+      Font font = new Font("Arial", Font.BOLD, 14);
+      StdDraw.setFont(font);
+      StdDraw.text(0.5, 0.95, "Score: " + GameGrid.score);
+   }
+
+   public void setNumber(int number) {
+      this.number = number;
+   }
+
+   public int getNumber() {
+      return number;
    }
 }

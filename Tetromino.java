@@ -184,6 +184,22 @@ public class Tetromino {
          bottomLeftCell.setY(bottomLeftCell.getY() - 1);
       return true; // a successful move in the given direction
    }
+   public void rotateClockwise() {
+      // Create a new 2D array to store the rotated tiles
+      Tile[][] rotatedTiles = new Tile[tileMatrix[0].length][tileMatrix.length];
+      // Iterate through each tile in the original tiles array
+      for (int row = 0; row < tileMatrix.length; row++) {
+         for (int col = 0; col < tileMatrix[row].length; col++) {
+            // Compute the new row and column indexes for the tile in the rotated array
+            int newRow = col;
+            int newCol = tileMatrix.length - 1 - row;
+            // Set the tile in the rotated array
+            rotatedTiles[newRow][newCol] = tileMatrix[row][col];
+         }
+      }
+      // Set the tiles data field to the rotated array
+      tileMatrix = rotatedTiles;
+   }
 
    // A method to check if the tetromino can be moved in the given direction or not
    public boolean canBeMoved(String dir, GameGrid gameGrid) {

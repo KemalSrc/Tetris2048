@@ -40,9 +40,13 @@ public class Tetris2048 {
          // check user interactions via the keyboard
          // --------------------------------------------------------------------
          // if the left arrow key is being pressed
+
          if (StdDraw.isKeyPressed(KeyEvent.VK_LEFT))
             // move the active tetromino left by one
             currentTetromino.move("left", grid);
+         else if (StdDraw.isKeyPressed(KeyEvent.VK_E)) {
+            currentTetromino.rotateClockwise();
+         }
          // if the right arrow key is being pressed
          else if (StdDraw.isKeyPressed(KeyEvent.VK_RIGHT))
             // move the active tetromino right by one
@@ -77,6 +81,11 @@ public class Tetris2048 {
 
          // display the game grid and the current tetromino
          grid.display();
+         grid.combineTiles();
+         //grid.fillBlanksDown();
+         grid.eraseAloneTiles();
+         //grid.eraseFullColumns();
+
 
       }
 
