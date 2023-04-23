@@ -87,7 +87,7 @@ public class Tetris2048 {
    // A method for creating a random shaped tetromino to enter the game grid
    public static Tetromino createTetromino() {
       // the type (shape) of the tetromino is determined randomly
-      char[] tetrominoTypes = { 'I', 'O', 'Z','T' };
+      char[] tetrominoTypes = { 'I', 'O', 'Z','T','L','J','S' };
       Random random = new Random();
       int randomIndex = random.nextInt(tetrominoTypes.length);
       char randomType = tetrominoTypes[randomIndex];
